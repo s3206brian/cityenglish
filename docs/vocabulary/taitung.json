@@ -1,0 +1,216 @@
+{
+  "city": "台東",
+  "cityEn": "Taitung",
+  "locations": [
+    {
+      "id": "taitung_tiehua",
+      "nameZh": "鐵花村",
+      "nameEn": "Tiehua Music Village",
+      "phonetic": "/ˌtiːeɪ.hwɑː ˈmjuːzɪk ˈvɪlɪdʒ/",
+      "description": "A creative arts community featuring live folk and indigenous music every weekend evening.",
+      "practicePhrase": "Tiehua Music Village is famous for live folk music performances.",
+      "keyVocabulary": [
+        {
+          "word": "village",
+          "phonetic": "/ˈvɪlɪdʒ/",
+          "partOfSpeech": "noun",
+          "definition": "a small community or settlement",
+          "exampleSentence": "The village comes alive every Friday night with music.",
+          "difficulty": "beginner"
+        },
+        {
+          "word": "performance",
+          "phonetic": "/pərˈfɔːrməns/",
+          "partOfSpeech": "noun",
+          "definition": "a live show or entertainment event",
+          "exampleSentence": "The outdoor performance attracted hundreds of visitors.",
+          "difficulty": "intermediate"
+        },
+        {
+          "word": "indigenous",
+          "phonetic": "/ɪnˈdɪdʒɪnəs/",
+          "partOfSpeech": "adjective",
+          "definition": "originating from a particular place; native",
+          "exampleSentence": "Indigenous music and crafts are celebrated at the village.",
+          "difficulty": "advanced"
+        },
+        {
+          "word": "folk",
+          "phonetic": "/foʊk/",
+          "partOfSpeech": "adjective",
+          "definition": "relating to traditional community culture",
+          "exampleSentence": "Folk musicians gather here every weekend.",
+          "difficulty": "beginner"
+        }
+      ]
+    },
+    {
+      "id": "taitung_forest",
+      "nameZh": "台東森林公園",
+      "nameEn": "Taitung Forest Park",
+      "phonetic": "/taɪˈtʊŋ ˈfɒrɪst pɑːrk/",
+      "description": "A rare urban forest park featuring Pipa Lake, cycling paths, and diverse bird species.",
+      "practicePhrase": "Taitung Forest Park has beautiful cycling trails near Pipa Lake.",
+      "keyVocabulary": [
+        {
+          "word": "forest",
+          "phonetic": "/ˈfɒrɪst/",
+          "partOfSpeech": "noun",
+          "definition": "a large area covered with trees",
+          "exampleSentence": "The forest park is a green oasis in the heart of the city.",
+          "difficulty": "beginner"
+        },
+        {
+          "word": "trail",
+          "phonetic": "/treɪl/",
+          "partOfSpeech": "noun",
+          "definition": "a path or track through natural terrain",
+          "exampleSentence": "The cycling trail winds through the entire forest park.",
+          "difficulty": "beginner"
+        },
+        {
+          "word": "biodiversity",
+          "phonetic": "/ˌbaɪoʊdaɪˈvɜːrsɪti/",
+          "partOfSpeech": "noun",
+          "definition": "the variety of plant and animal life in an area",
+          "exampleSentence": "The park is known for its incredible biodiversity.",
+          "difficulty": "advanced"
+        },
+        {
+          "word": "lagoon",
+          "phonetic": "/ləˈɡuːn/",
+          "partOfSpeech": "noun",
+          "definition": "a shallow body of water separated from the sea",
+          "exampleSentence": "Pipa Lake looks like a small lagoon surrounded by pine trees.",
+          "difficulty": "intermediate"
+        }
+      ]
+    },
+    {
+      "id": "taitung_zhiben",
+      "nameZh": "知本溫泉",
+      "nameEn": "Zhiben Hot Springs",
+      "phonetic": "/dʒɪˈbɛn hɒt sprɪŋz/",
+      "description": "A famous hot spring resort area nestled in a valley with sodium bicarbonate springs.",
+      "practicePhrase": "Zhiben Hot Springs is the perfect place to relax after hiking.",
+      "keyVocabulary": [
+        {
+          "word": "hot spring",
+          "phonetic": "/hɒt sprɪŋ/",
+          "partOfSpeech": "noun",
+          "definition": "a naturally heated underground water source",
+          "exampleSentence": "Soaking in a hot spring is wonderfully relaxing.",
+          "difficulty": "beginner"
+        },
+        {
+          "word": "resort",
+          "phonetic": "/rɪˈzɔːrt/",
+          "partOfSpeech": "noun",
+          "definition": "a place for rest, recreation, and accommodation",
+          "exampleSentence": "The resort offers both indoor and outdoor hot spring pools.",
+          "difficulty": "intermediate"
+        },
+        {
+          "word": "therapeutic",
+          "phonetic": "/ˌθerəˈpjuːtɪk/",
+          "partOfSpeech": "adjective",
+          "definition": "having healing or restorative properties",
+          "exampleSentence": "The mineral-rich water has therapeutic benefits for the skin.",
+          "difficulty": "advanced"
+        },
+        {
+          "word": "sodium bicarbonate",
+          "phonetic": "/ˈsoʊdiəm baɪˈkɑːrbənɪt/",
+          "partOfSpeech": "noun",
+          "definition": "a type of alkaline mineral found in spring water",
+          "exampleSentence": "Zhiben's sodium bicarbonate springs are gentle on the skin.",
+          "difficulty": "advanced"
+        }
+      ]
+    },
+    {
+      "id": "taitung_green_island",
+      "nameZh": "綠島",
+      "nameEn": "Green Island",
+      "phonetic": "/ɡriːn ˈaɪlənd/",
+      "description": "A volcanic island famous for snorkeling, the world-famous submarine hot springs, and clear turquoise waters.",
+      "practicePhrase": "Green Island is famous for snorkeling and its unique submarine hot springs.",
+      "keyVocabulary": [
+        {
+          "word": "snorkeling",
+          "phonetic": "/ˈsnɔːrkəlɪŋ/",
+          "partOfSpeech": "noun",
+          "definition": "swimming with a breathing tube to observe underwater life",
+          "exampleSentence": "Snorkeling around Green Island reveals stunning coral reefs.",
+          "difficulty": "beginner"
+        },
+        {
+          "word": "submarine",
+          "phonetic": "/ˈsʌbməriːn/",
+          "partOfSpeech": "adjective",
+          "definition": "existing or happening under the sea",
+          "exampleSentence": "The submarine hot spring is one of only three in the world.",
+          "difficulty": "intermediate"
+        },
+        {
+          "word": "coral reef",
+          "phonetic": "/ˈkɒrəl riːf/",
+          "partOfSpeech": "noun",
+          "definition": "an underwater structure made of coral",
+          "exampleSentence": "The coral reef surrounding the island is home to colorful fish.",
+          "difficulty": "intermediate"
+        },
+        {
+          "word": "turquoise",
+          "phonetic": "/ˈtɜːrkwɔɪz/",
+          "partOfSpeech": "adjective",
+          "definition": "a blue-green color like the sea",
+          "exampleSentence": "The turquoise waters around Green Island are crystal clear.",
+          "difficulty": "intermediate"
+        }
+      ]
+    },
+    {
+      "id": "taitung_sanxiantai",
+      "nameZh": "三仙台",
+      "nameEn": "Sanxiantai",
+      "phonetic": "/sæn.ʃiːen.taɪ/",
+      "description": "A coral reef islet connected to the mainland by an iconic eight-arch bridge, home to rare sea creatures.",
+      "practicePhrase": "The eight-arch bridge at Sanxiantai is one of Taiwan's most iconic landmarks.",
+      "keyVocabulary": [
+        {
+          "word": "arch bridge",
+          "phonetic": "/ɑːrtʃ brɪdʒ/",
+          "partOfSpeech": "noun",
+          "definition": "a bridge with curved supporting structures",
+          "exampleSentence": "The eight-arch bridge stretches gracefully across the ocean.",
+          "difficulty": "intermediate"
+        },
+        {
+          "word": "islet",
+          "phonetic": "/ˈaɪlɪt/",
+          "partOfSpeech": "noun",
+          "definition": "a very small island",
+          "exampleSentence": "The islet is accessible only via the famous arch bridge.",
+          "difficulty": "advanced"
+        },
+        {
+          "word": "coastline",
+          "phonetic": "/ˈkoʊstlaɪn/",
+          "partOfSpeech": "noun",
+          "definition": "the outline of a coast; the shore of the sea",
+          "exampleSentence": "Sanxiantai offers breathtaking views of the rugged coastline.",
+          "difficulty": "beginner"
+        },
+        {
+          "word": "mythology",
+          "phonetic": "/mɪˈθɒlədʒi/",
+          "partOfSpeech": "noun",
+          "definition": "a collection of myths or traditional stories",
+          "exampleSentence": "According to local mythology, three immortals once rested on the island.",
+          "difficulty": "advanced"
+        }
+      ]
+    }
+  ]
+}
