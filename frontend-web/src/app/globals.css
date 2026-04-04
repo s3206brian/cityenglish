@@ -5,8 +5,32 @@
 :root {
   --color-primary: #2563eb;
   --color-accent: #f59e0b;
+  --color-success: #10b981;
+  --color-error: #ef4444;
+  --color-bg: #f8fafc;
+  --color-text: #1e293b;
 }
 
 body {
   font-family: 'Noto Sans TC', 'Inter', system-ui, sans-serif;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+}
+
+@keyframes pulse-ring {
+  0% { transform: scale(1); opacity: 0.8; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+
+@keyframes count-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.pulse-ring {
+  animation: pulse-ring 1.2s ease-out infinite;
+}
+
+.count-up {
+  animation: count-up 0.4s ease-out forwards;
 }

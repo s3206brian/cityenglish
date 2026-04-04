@@ -1,4 +1,5 @@
 import './globals.css';
+import Nav from './components/Nav';
 
 export const metadata = {
   title: 'CityEnglish — 用旅行學英文',
@@ -15,7 +16,10 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="zh-TW">
-      <body className="bg-white text-gray-900 antialiased">{children}</body>
+      <body className="antialiased">
+        <Nav />
+        {children}
+      </body>
     </html>
   );
 }
