@@ -15,7 +15,20 @@ export const CITIES = {
         phonetic: '/ˌtiːeɪ.hwɑː ˈmjuːzɪk ˈvɪlɪdʒ/',
         emoji: '🎵',
         description: 'A creative arts community featuring live folk and indigenous music every weekend evening.',
-        practicePhrase: 'Tiehua Music Village is famous for live folk music performances.',
+        phrases: [
+          {
+            en: 'Tiehua Music Village is famous for live folk music performances.',
+            zh: '鐵花村以現場民謠音樂演出聞名。',
+          },
+          {
+            en: 'The village hosts live music events every Friday and Saturday evening.',
+            zh: '村子每週五和週六晚上舉辦現場音樂活動。',
+          },
+          {
+            en: 'Indigenous culture and crafts are celebrated here every weekend.',
+            zh: '這裡每個週末都在慶祝原住民文化與工藝。',
+          },
+        ],
         keyVocabulary: [
           { word: 'village', phonetic: '/ˈvɪlɪdʒ/', difficulty: 'beginner' },
           { word: 'performance', phonetic: '/pərˈfɔːrməns/', difficulty: 'intermediate' },
@@ -30,7 +43,20 @@ export const CITIES = {
         phonetic: '/taɪˈtʊŋ ˈfɒrɪst pɑːrk/',
         emoji: '🌲',
         description: 'A rare urban forest park featuring Pipa Lake, cycling paths, and diverse bird species.',
-        practicePhrase: 'Taitung Forest Park has beautiful cycling trails near Pipa Lake.',
+        phrases: [
+          {
+            en: 'Taitung Forest Park has beautiful cycling trails near Pipa Lake.',
+            zh: '台東森林公園在琵琶湖附近有美麗的自行車道。',
+          },
+          {
+            en: 'The park is home to hundreds of bird species and rare plants.',
+            zh: '公園裡棲息著數百種鳥類和珍稀植物。',
+          },
+          {
+            en: 'Renting a bicycle is the best way to explore the park.',
+            zh: '租一輛腳踏車是探索公園的最佳方式。',
+          },
+        ],
         keyVocabulary: [
           { word: 'forest', phonetic: '/ˈfɒrɪst/', difficulty: 'beginner' },
           { word: 'trail', phonetic: '/treɪl/', difficulty: 'beginner' },
@@ -45,11 +71,25 @@ export const CITIES = {
         phonetic: '/dʒɪˈbɛn hɒt sprɪŋz/',
         emoji: '♨️',
         description: 'A famous hot spring resort area nestled in a valley with sodium bicarbonate springs.',
-        practicePhrase: 'Zhiben Hot Springs is the perfect place to relax after hiking.',
+        phrases: [
+          {
+            en: 'Zhiben Hot Springs is the perfect place to relax after hiking.',
+            zh: '知本溫泉是健行後放鬆的完美地點。',
+          },
+          {
+            en: 'The hot spring water here is rich in sodium bicarbonate.',
+            zh: '這裡的溫泉水富含碳酸氫鈉。',
+          },
+          {
+            en: 'Soaking in the hot springs is a wonderful experience in winter.',
+            zh: '冬天泡溫泉是一種美妙的體驗。',
+          },
+        ],
         keyVocabulary: [
           { word: 'hot spring', phonetic: '/hɒt sprɪŋ/', difficulty: 'beginner' },
           { word: 'resort', phonetic: '/rɪˈzɔːrt/', difficulty: 'intermediate' },
           { word: 'therapeutic', phonetic: '/ˌθerəˈpjuːtɪk/', difficulty: 'advanced' },
+          { word: 'soak', phonetic: '/soʊk/', difficulty: 'beginner' },
         ],
       },
       {
@@ -59,7 +99,20 @@ export const CITIES = {
         phonetic: '/ɡriːn ˈaɪlənd/',
         emoji: '🏝️',
         description: 'A volcanic island famous for snorkeling, submarine hot springs, and turquoise waters.',
-        practicePhrase: 'Green Island is famous for snorkeling and its unique submarine hot springs.',
+        phrases: [
+          {
+            en: 'Green Island is famous for snorkeling and its unique submarine hot springs.',
+            zh: '綠島以浮潛和獨特的海底溫泉聞名。',
+          },
+          {
+            en: 'The coral reefs around Green Island are home to colorful tropical fish.',
+            zh: '綠島周圍的珊瑚礁是五彩熱帶魚的家園。',
+          },
+          {
+            en: 'You can take a ferry from Taitung to reach Green Island.',
+            zh: '你可以從台東搭渡輪前往綠島。',
+          },
+        ],
         keyVocabulary: [
           { word: 'snorkeling', phonetic: '/ˈsnɔːrkəlɪŋ/', difficulty: 'beginner' },
           { word: 'submarine', phonetic: '/ˈsʌbməriːn/', difficulty: 'intermediate' },
@@ -74,7 +127,20 @@ export const CITIES = {
         phonetic: '/sæn.ʃiːen.taɪ/',
         emoji: '🌉',
         description: 'A coral reef islet connected to the mainland by an iconic eight-arch bridge.',
-        practicePhrase: 'The eight-arch bridge at Sanxiantai is one of Taiwan\'s most iconic landmarks.',
+        phrases: [
+          {
+            en: 'The eight-arch bridge at Sanxiantai is one of Taiwan\'s most iconic landmarks.',
+            zh: '三仙台的八拱橋是台灣最具代表性的地標之一。',
+          },
+          {
+            en: 'Sanxiantai is a small coral island connected to the shore by a footbridge.',
+            zh: '三仙台是一座透過步行橋與海岸相連的珊瑚小島。',
+          },
+          {
+            en: 'Legend says three immortals once rested on this island.',
+            zh: '傳說曾有三位神仙在此島休息。',
+          },
+        ],
         keyVocabulary: [
           { word: 'arch bridge', phonetic: '/ɑːrtʃ brɪdʒ/', difficulty: 'intermediate' },
           { word: 'islet', phonetic: '/ˈaɪlɪt/', difficulty: 'advanced' },
