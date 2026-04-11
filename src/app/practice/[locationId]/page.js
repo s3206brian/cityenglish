@@ -455,7 +455,10 @@ export default function PracticePage() {
                 onClick={() => speak(v.word)}
                 className="bg-white border border-gray-100 rounded-xl p-3 text-left hover:border-blue-200 hover:bg-blue-50 transition group"
               >
-                <p className="font-semibold text-gray-800 text-sm group-hover:text-blue-700">{v.word}</p>
+                <div className="flex items-baseline justify-between gap-2">
+                  <p className="font-semibold text-gray-800 text-sm group-hover:text-blue-700">{v.word}</p>
+                  {v.zh && <p className="text-gray-400 text-xs shrink-0">{v.zh}</p>}
+                </div>
                 <p className="text-blue-400 font-mono text-xs mt-0.5">{v.phonetic}</p>
               </button>
             ))}
