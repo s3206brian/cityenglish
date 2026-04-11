@@ -35,6 +35,7 @@ Thumbs.db
 !package-lock.json
 !tsconfig.json
 !jsconfig.json
+!zbpack.json
 !next.config.js
 !tailwind.config.js
 !postcss.config.js
