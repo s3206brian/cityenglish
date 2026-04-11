@@ -1,5 +1,6 @@
 import './globals.css';
 import Nav from './components/Nav';
+import BottomNav from './components/BottomNav';
 import AuthProvider from './components/AuthProvider';
 
 export const metadata = {
@@ -20,7 +21,11 @@ export default function RootLayout({ children }) {
       <body className="antialiased">
         <AuthProvider>
           <Nav />
-          {children}
+          {/* pb-16 讓內容不被底部 nav 遮住（手機） */}
+          <div className="sm:pb-0 pb-16">
+            {children}
+          </div>
+          <BottomNav />
         </AuthProvider>
       </body>
     </html>
