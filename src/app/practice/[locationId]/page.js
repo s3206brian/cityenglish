@@ -2,6 +2,7 @@
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
+import { useAuth } from '@/app/components/AuthProvider';
 import { CITIES } from '../../data/cities';
 
 function findLocation(locationId) {
@@ -27,6 +28,7 @@ const WORD_COLOR = (confidence) => {
 
 export default function PracticePage() {
   const { locationId } = useParams();
+  const { user, supabase } = useAuth();
   const found = findLocation(locationId);
 
   const [state, setState] = useState('idle'); // idle | recording | loading | result
@@ -78,15 +80,25 @@ export default function PracticePage() {
       const base64 = reader.result.split(',')[1];
       try {
         const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+        const headers = { 'Content-Type': 'application/json' };
+        // 取得 Supabase access token，傳給後端驗證身份
+        try {
+          const { data: { session } } = await supabase.auth.getSession();
+          if (session?.access_token) {
+            headers['Authorization'] = `Bearer ${session.access_token}`;
+          }
+        } catch { /* 未登入時略過 */ }
+
         const res = await fetch(`${apiUrl}/api/evaluate-speech`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers,
           body: JSON.stringify({
             audioBase64: base64,
             encoding: 'WEBM_OPUS',
             sampleRateHertz: 48000,
             targetPhrase: loc.practicePhrase,
             locationId: loc.id,
+            userId: user?.id ?? undefined,
           }),
         });
         const data = await res.json();

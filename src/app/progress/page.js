@@ -1,9 +1,8 @@
 'use client';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useAuth } from '@/app/components/AuthProvider';
 import { CITIES } from '../data/cities';
-
-const MOCK_USER_ID = 'demo-user-001';
 
 function ScoreBar({ value, max = 100 }) {
   const pct = Math.round((value / max) * 100);
@@ -20,17 +19,31 @@ function ScoreBar({ value, max = 100 }) {
 }
 
 export default function ProgressPage() {
+  const { user, loading: authLoading, supabase } = useAuth();
+  const status = authLoading ? 'loading' : user ? 'authenticated' : 'unauthenticated';
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    if (status === 'loading') return;
+    if (status === 'unauthenticated') { setLoading(false); return; }
+    if (!user) return;
+
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
-    fetch(`${apiUrl}/api/user-progress/${MOCK_USER_ID}`)
+
+    supabase.auth.getSession()
+      .then(({ data: { session } }) =>
+        fetch(`${apiUrl}/api/user-progress/${user.id}`, {
+          headers: session?.access_token
+            ? { Authorization: `Bearer ${session.access_token}` }
+            : {},
+        })
+      )
       .then((r) => r.json())
       .then((d) => { setData(d); setLoading(false); })
       .catch(() => { setError(true); setLoading(false); });
-  }, []);
+  }, [status, user]);
 
   const sessions = data?.sessions ?? [];
   const wordProgress = data?.wordProgress ?? [];
@@ -72,7 +85,21 @@ export default function ProgressPage() {
           </div>
         </div>
 
-        {loading && (
+        {status === 'unauthenticated' && (
+          <div className="text-center py-20 text-gray-400">
+            <div className="text-5xl mb-4">🔐</div>
+            <p className="text-lg font-medium text-gray-700 mb-2">請先登入</p>
+            <p className="text-sm mb-6">登入後才能查看你的練習進度</p>
+            <button
+              onClick={() => window.location.href = '/login'}
+              className="bg-blue-600 text-white px-6 py-2.5 rounded-xl font-medium hover:bg-blue-700 transition"
+            >
+              登入
+            </button>
+          </div>
+        )}
+
+        {loading && status !== 'unauthenticated' && (
           <div className="text-center py-20 text-gray-400">
             <div className="text-4xl mb-3 animate-pulse">📊</div>
             <p>載入中…</p>

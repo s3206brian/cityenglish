@@ -2,6 +2,7 @@ const express = require('express');
 const { body, validationResult } = require('express-validator');
 const { transcribeAudio } = require('../services/googleStt');
 const { saveSession } = require('../db/sessionRepository');
+const { requireAuth } = require('../middleware/auth');
 
 const router = express.Router();
 
@@ -130,7 +131,7 @@ router.post(
  * GET /api/user-progress/:userId
  * 查詢使用者的練習歷程
  */
-router.get('/user-progress/:userId', async (req, res, next) => {
+router.get('/user-progress/:userId', requireAuth, async (req, res, next) => {
   try {
     const { getUserProgress } = require('../db/sessionRepository');
     const progress = await getUserProgress(req.params.userId);

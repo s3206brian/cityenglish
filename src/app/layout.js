@@ -1,5 +1,6 @@
 import './globals.css';
 import Nav from './components/Nav';
+import AuthProvider from './components/AuthProvider';
 
 export const metadata = {
   title: 'CityEnglish — 用旅行學英文',
@@ -17,8 +18,10 @@ export default function RootLayout({ children }) {
   return (
     <html lang="zh-TW">
       <body className="antialiased">
-        <Nav />
-        {children}
+        <AuthProvider>
+          <Nav />
+          {children}
+        </AuthProvider>
       </body>
     </html>
   );
