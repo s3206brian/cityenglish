@@ -53,6 +53,7 @@ export default function PracticePage() {
   const [displayScore, setDisplayScore] = useState(0);
   const [recordSecs, setRecordSecs] = useState(0);
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const [saveStatus, setSaveStatus] = useState(null); // null | 'saved' | 'not_logged_in' | 'error'
 
   const mediaRef = useRef(null);
   const chunksRef = useRef([]);
@@ -142,6 +143,15 @@ export default function PracticePage() {
         setResult(data);
         setState('result');
         animateScore(data.score ?? 0);
+
+        // 儲存狀態提示
+        if (!user) {
+          setSaveStatus('not_logged_in');
+        } else if (data.saveError) {
+          setSaveStatus('error');
+        } else if (data.sessionId) {
+          setSaveStatus('saved');
+        }
       } catch {
         alert('評分失敗，請確認後端服務是否正常。');
         setState('idle');
@@ -166,6 +176,7 @@ export default function PracticePage() {
     setDisplayScore(0);
     setState('idle');
     setShowZh(false);
+    setSaveStatus(null);
   }
 
   function nextPhrase() {
@@ -339,6 +350,27 @@ export default function PracticePage() {
                     <span key={w} className="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded-full">{w}</span>
                   ))}
                 </div>
+              </div>
+            )}
+
+            {/* 儲存狀態 */}
+            {saveStatus === 'saved' && (
+              <div className="mt-3 flex items-center gap-1.5 text-xs text-green-600">
+                <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                </svg>
+                已儲存到練習記錄
+              </div>
+            )}
+            {saveStatus === 'not_logged_in' && (
+              <div className="mt-3 flex items-center justify-between text-xs text-gray-400 bg-gray-50 rounded-xl px-3 py-2">
+                <span>登入後可儲存練習進度</span>
+                <a href="/login" className="text-blue-600 font-medium">登入</a>
+              </div>
+            )}
+            {saveStatus === 'error' && (
+              <div className="mt-3 text-xs text-amber-500">
+                儲存失敗，請稍後再試
               </div>
             )}
           </div>
