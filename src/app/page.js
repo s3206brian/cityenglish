@@ -104,10 +104,10 @@ export default function Home() {
               探索城市 →
             </a>
             <a
-              href="#download"
-              className="border-2 border-white/50 text-white font-semibold px-8 py-3.5 rounded-full hover:bg-white/10 hover:border-white transition"
+              href="/leaderboard/taitung"
+              className="border-2 border-white/50 text-white font-semibold px-8 py-3.5 rounded-full hover:bg-white/10 hover:border-white transition flex items-center gap-2"
             >
-              下載 App
+              🏆 城市排行榜
             </a>
           </div>
         </div>
