@@ -1,9 +1,9 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/app/components/AuthProvider';
 
-export default function LoginPage() {
+function LoginForm() {
   const { user, loading, supabase } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -163,5 +163,17 @@ export default function LoginPage() {
         </p>
       </div>
     </main>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <main className="min-h-screen flex items-center justify-center">
+        <div className="text-gray-400 animate-pulse">載入中…</div>
+      </main>
+    }>
+      <LoginForm />
+    </Suspense>
   );
 }
