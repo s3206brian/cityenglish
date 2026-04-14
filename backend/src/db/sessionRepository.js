@@ -1,11 +1,9 @@
 const { Pool } = require('pg');
 
+// Supabase 要求 SSL；DATABASE_URL 有設定時一律啟用
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl:
-    process.env.NODE_ENV === 'production'
-      ? { rejectUnauthorized: false }
-      : false,
+  ssl: process.env.DATABASE_URL ? { rejectUnauthorized: false } : false,
 });
 
 /**
@@ -16,7 +14,6 @@ async function saveSession({ userId, locationId, targetPhrase, transcript, score
   try {
     await client.query('BEGIN');
 
-    // 插入 session
     const sessionRes = await client.query(
       `INSERT INTO practice_sessions
          (user_id, location_id, target_phrase, transcript, score, word_confidence)
@@ -26,7 +23,6 @@ async function saveSession({ userId, locationId, targetPhrase, transcript, score
     );
     const sessionId = sessionRes.rows[0].id;
 
-    // 更新每個單字的進度
     for (const { word, confidence } of wordConfidence) {
       await client.query(
         `INSERT INTO word_progress (user_id, word, location_id, attempt_count, best_confidence, last_practiced, mastered)
@@ -52,12 +48,14 @@ async function saveSession({ userId, locationId, targetPhrase, transcript, score
 
 /**
  * 查詢使用者練習歷程
+ * 回傳：sessions（最近50筆）、wordProgress、locationScores（每個景點最高分）
  */
 async function getUserProgress(userId) {
-  const [sessionsRes, wordRes] = await Promise.all([
+  const [sessionsRes, wordRes, locationRes] = await Promise.all([
+    // 最近 50 筆練習記錄
     pool.query(
-      `SELECT ps.id, ps.location_id, l.name_en, ps.target_phrase,
-              ps.transcript, ps.score, ps.created_at
+      `SELECT ps.id, ps.location_id, l.name_zh, l.name_en, l.city,
+              ps.target_phrase, ps.transcript, ps.score, ps.created_at
        FROM practice_sessions ps
        LEFT JOIN locations l ON l.id = ps.location_id
        WHERE ps.user_id = $1
@@ -65,11 +63,27 @@ async function getUserProgress(userId) {
        LIMIT 50`,
       [userId]
     ),
+    // 單字掌握度
     pool.query(
-      `SELECT word, best_confidence, attempt_count, mastered, last_practiced
-       FROM word_progress
-       WHERE user_id = $1
-       ORDER BY last_practiced DESC`,
+      `SELECT wp.word, wp.best_confidence, wp.attempt_count, wp.mastered,
+              wp.last_practiced, wp.location_id
+       FROM word_progress wp
+       WHERE wp.user_id = $1
+       ORDER BY wp.last_practiced DESC`,
+      [userId]
+    ),
+    // 每個景點：最高分、積分、練習次數、最後練習時間
+    pool.query(
+      `SELECT ps.location_id, l.name_zh, l.name_en, l.city,
+              MAX(ps.score)                                   AS best_score,
+              SUM(10 + FLOOR(ps.score::numeric / 2))::int    AS total_points,
+              COUNT(*)                                        AS attempt_count,
+              MAX(ps.created_at)                              AS last_practiced
+       FROM practice_sessions ps
+       LEFT JOIN locations l ON l.id = ps.location_id
+       WHERE ps.user_id = $1
+       GROUP BY ps.location_id, l.name_zh, l.name_en, l.city
+       ORDER BY l.city, ps.location_id`,
       [userId]
     ),
   ]);
@@ -77,7 +91,56 @@ async function getUserProgress(userId) {
   return {
     sessions: sessionsRes.rows,
     wordProgress: wordRes.rows,
+    locationScores: locationRes.rows,
   };
 }
 
-module.exports = { saveSession, getUserProgress };
+/**
+ * 城市排行榜：該城市內最高分前 20 名
+ * @param {string} city  e.g. '台東' | '台南' | '花蓮'
+ */
+async function getCityLeaderboard(city) {
+  const res = await pool.query(
+    `SELECT
+       au.id                                                        AS user_id,
+       COALESCE(au.raw_user_meta_data->>'display_name',
+                au.raw_user_meta_data->>'full_name',
+                au.email)                                          AS display_name,
+       au.raw_user_meta_data->>'avatar_url'                        AS avatar_url,
+       SUM(10 + FLOOR(ps.score::numeric / 2))::int                 AS total_points,
+       MAX(ps.score)                                               AS best_score,
+       COUNT(*)::int                                               AS attempt_count,
+       MAX(ps.created_at)                                          AS last_practiced
+     FROM practice_sessions ps
+     JOIN auth.users         au ON au.id = ps.user_id
+     JOIN locations           l  ON l.id  = ps.location_id
+     WHERE l.city = $1
+     GROUP BY au.id, au.raw_user_meta_data, au.email
+     ORDER BY total_points DESC, attempt_count DESC
+     LIMIT 20`,
+    [city]
+  );
+  return res.rows;
+}
+
+async function getGlobalLeaderboard() {
+  const res = await pool.query(
+    `SELECT
+       au.id                                                        AS user_id,
+       COALESCE(au.raw_user_meta_data->>'display_name',
+                au.raw_user_meta_data->>'full_name',
+                au.email)                                          AS display_name,
+       au.raw_user_meta_data->>'avatar_url'                        AS avatar_url,
+       SUM(10 + FLOOR(ps.score::numeric / 2))::int                 AS total_points,
+       MAX(ps.score)                                               AS best_score,
+       COUNT(*)::int                                               AS attempt_count
+     FROM practice_sessions ps
+     JOIN auth.users au ON au.id = ps.user_id
+     GROUP BY au.id, au.raw_user_meta_data, au.email
+     ORDER BY total_points DESC
+     LIMIT 20`
+  );
+  return res.rows;
+}
+
+module.exports = { saveSession, getUserProgress, getCityLeaderboard, getGlobalLeaderboard };

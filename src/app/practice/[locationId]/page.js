@@ -32,6 +32,73 @@ function wordColor(confidence) {
   return 'text-red-500 bg-red-50 border-red-200';
 }
 
+function VocabSection({ vocab }) {
+  const [expanded, setExpanded] = useState(null);
+  if (!vocab?.length) return null;
+  return (
+    <div>
+      <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">關鍵詞彙</h2>
+      <div className="space-y-2">
+        {vocab.map((v) => {
+          const isOpen = expanded === v.word;
+          return (
+            <div key={v.word} className="bg-white border border-gray-100 rounded-xl overflow-hidden">
+              <button
+                className="w-full flex items-center gap-3 p-3 text-left hover:bg-gray-50 transition"
+                onClick={() => {
+                  speak(v.word);
+                  setExpanded(isOpen ? null : v.word);
+                }}
+              >
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-baseline gap-2">
+                    <span className="font-semibold text-gray-800 text-sm">{v.word}</span>
+                    {v.zh && <span className="text-gray-400 text-xs">{v.zh}</span>}
+                    <span className={`text-xs px-1.5 py-0.5 rounded-full ${
+                      v.difficulty === 'advanced' ? 'bg-red-100 text-red-600' :
+                      v.difficulty === 'intermediate' ? 'bg-amber-100 text-amber-600' :
+                      'bg-green-100 text-green-600'
+                    }`}>{v.difficulty === 'advanced' ? '進階' : v.difficulty === 'intermediate' ? '中級' : '基礎'}</span>
+                  </div>
+                  <p className="text-blue-400 font-mono text-xs mt-0.5">{v.phonetic}</p>
+                </div>
+                <div className="flex items-center gap-1.5 shrink-0">
+                  <span className="text-xs text-blue-400">🔊</span>
+                  <svg className={`w-4 h-4 text-gray-300 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
+              </button>
+
+              {isOpen && (v.example || v.pattern) && (
+                <div className="px-3 pb-3 pt-0 space-y-2 border-t border-gray-50">
+                  {v.example && (
+                    <div className="bg-blue-50 rounded-lg p-2.5">
+                      <p className="text-xs text-blue-400 font-medium mb-1">📝 例句</p>
+                      <p className="text-sm text-blue-800 font-medium">{v.example}</p>
+                      {v.exampleZh && <p className="text-xs text-blue-500 mt-1">{v.exampleZh}</p>}
+                      <button onClick={(e) => { e.stopPropagation(); speak(v.example); }}
+                        className="text-xs text-blue-400 mt-1.5 hover:text-blue-600">🔊 聽例句</button>
+                    </div>
+                  )}
+                  {v.pattern && (
+                    <div className="bg-amber-50 rounded-lg p-2.5">
+                      <p className="text-xs text-amber-500 font-medium mb-1">📐 句型</p>
+                      <p className="text-sm text-amber-800 font-mono">{v.pattern}</p>
+                      {v.patternZh && <p className="text-xs text-amber-600 mt-1">{v.patternZh}</p>}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 function speak(text) {
   if (typeof window === 'undefined') return;
   window.speechSynthesis.cancel();
@@ -478,24 +545,7 @@ export default function PracticePage() {
         )}
 
         {/* Vocabulary */}
-        <div>
-          <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">關鍵詞彙</h2>
-          <div className="grid grid-cols-2 gap-2.5">
-            {loc.keyVocabulary.map((v) => (
-              <button
-                key={v.word}
-                onClick={() => speak(v.word)}
-                className="bg-white border border-gray-100 rounded-xl p-3 text-left hover:border-blue-200 hover:bg-blue-50 transition group"
-              >
-                <div className="flex items-baseline justify-between gap-2">
-                  <p className="font-semibold text-gray-800 text-sm group-hover:text-blue-700">{v.word}</p>
-                  {v.zh && <p className="text-gray-400 text-xs shrink-0">{v.zh}</p>}
-                </div>
-                <p className="text-blue-400 font-mono text-xs mt-0.5">{v.phonetic}</p>
-              </button>
-            ))}
-          </div>
-        </div>
+        <VocabSection vocab={loc.keyVocabulary} />
 
       </div>
     </main>

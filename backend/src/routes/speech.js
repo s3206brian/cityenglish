@@ -88,7 +88,11 @@ const CITY_NAME_MAP = { taitung: '台東', tainan: '台南', hualien: '花蓮' }
 
 router.get('/leaderboard/:city', async (req, res, next) => {
   try {
-    const { getCityLeaderboard } = require('../db/sessionRepository');
+    const { getCityLeaderboard, getGlobalLeaderboard } = require('../db/sessionRepository');
+    if (req.params.city === 'global') {
+      const rows = await getGlobalLeaderboard();
+      return res.json(rows);
+    }
     const cityZh = CITY_NAME_MAP[req.params.city];
     if (!cityZh) return res.status(400).json({ error: 'Unknown city' });
     const rows = await getCityLeaderboard(cityZh);
