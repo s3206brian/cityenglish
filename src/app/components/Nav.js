@@ -6,9 +6,12 @@ import { useAuth } from './AuthProvider';
 export default function Nav() {
   const pathname = usePathname();
   const router = useRouter();
-  const { user, loading, supabase } = useAuth();
-  const ADMIN_EMAILS = (process.env.NEXT_PUBLIC_ADMIN_EMAILS || '').split(',').map(e => e.trim()).filter(Boolean);
-  const isAdmin = user && (ADMIN_EMAILS.length === 0 || ADMIN_EMAILS.includes(user.email));
+  const { user, profile, loading, supabase } = useAuth();
+  const BOOTSTRAP_EMAILS = (process.env.NEXT_PUBLIC_ADMIN_EMAILS || '').split(',').map(e => e.trim()).filter(Boolean);
+  const isAdmin = user && (
+    profile?.is_admin === true ||
+    (BOOTSTRAP_EMAILS.length > 0 && BOOTSTRAP_EMAILS.includes(user.email))
+  );
 
   const links = [
     { href: '/', label: '首頁' },

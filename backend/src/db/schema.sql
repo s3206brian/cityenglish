@@ -115,6 +115,83 @@ ON CONFLICT (id) DO UPDATE
       description = EXCLUDED.description;
 
 -- =====================
+-- 使用者 Profile 表
+-- =====================
+CREATE TABLE IF NOT EXISTS profiles (
+  id           UUID        PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  email        TEXT,
+  display_name TEXT        NOT NULL DEFAULT '',
+  avatar_url   TEXT        NOT NULL DEFAULT '',
+  is_admin     BOOLEAN     NOT NULL DEFAULT false,
+  created_at   TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at   TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+DROP TRIGGER IF EXISTS trg_profiles_updated_at ON profiles;
+CREATE TRIGGER trg_profiles_updated_at
+  BEFORE UPDATE ON profiles
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+
+-- 新用戶自動建立 profile
+CREATE OR REPLACE FUNCTION handle_new_user()
+RETURNS TRIGGER AS $$
+BEGIN
+  INSERT INTO profiles (id, email, display_name, avatar_url)
+  VALUES (
+    NEW.id,
+    NEW.email,
+    COALESCE(NEW.raw_user_meta_data->>'display_name', NEW.raw_user_meta_data->>'full_name', ''),
+    COALESCE(NEW.raw_user_meta_data->>'avatar_url', '')
+  )
+  ON CONFLICT (id) DO NOTHING;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+CREATE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW EXECUTE FUNCTION handle_new_user();
+
+-- 判斷目前用戶是否為管理員（避免 RLS 循環）
+CREATE OR REPLACE FUNCTION is_admin()
+RETURNS BOOLEAN AS $$
+  SELECT COALESCE(
+    (SELECT is_admin FROM profiles WHERE id = auth.uid()),
+    false
+  );
+$$ LANGUAGE sql SECURITY DEFINER STABLE;
+
+ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
+
+-- 本人可讀寫自己的 profile
+DROP POLICY IF EXISTS "own profile" ON profiles;
+CREATE POLICY "own profile" ON profiles
+  USING (id = auth.uid())
+  WITH CHECK (id = auth.uid());
+
+-- 管理員可讀取所有 profile
+DROP POLICY IF EXISTS "admin read all profiles" ON profiles;
+CREATE POLICY "admin read all profiles" ON profiles
+  FOR SELECT USING (is_admin());
+
+-- 管理員可更新任意 profile（包含 is_admin 欄位）
+DROP POLICY IF EXISTS "admin update profiles" ON profiles;
+CREATE POLICY "admin update profiles" ON profiles
+  FOR UPDATE USING (is_admin())
+  WITH CHECK (is_admin());
+
+-- 將現有用戶補建 profile（初次執行用）
+INSERT INTO profiles (id, email, display_name, avatar_url)
+SELECT
+  id,
+  email,
+  COALESCE(raw_user_meta_data->>'display_name', raw_user_meta_data->>'full_name', ''),
+  COALESCE(raw_user_meta_data->>'avatar_url', '')
+FROM auth.users
+ON CONFLICT (id) DO NOTHING;
+
+-- =====================
 -- 課程表
 -- =====================
 CREATE TABLE IF NOT EXISTS courses (

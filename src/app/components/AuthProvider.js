@@ -10,26 +10,34 @@ export function useAuth() {
 
 export default function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
+  const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const supabase = createClient();
 
+  async function fetchProfile(u) {
+    if (!u) { setProfile(null); return; }
+    const { data } = await supabase.from('profiles').select('*').eq('id', u.id).single();
+    setProfile(data ?? null);
+  }
+
   useEffect(() => {
-    // 取得初始 session
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      setUser(user);
+    supabase.auth.getUser().then(async ({ data: { user: u } }) => {
+      setUser(u);
+      await fetchProfile(u);
       setLoading(false);
     });
 
-    // 監聽登入／登出事件
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      const u = session?.user ?? null;
+      setUser(u);
+      await fetchProfile(u);
     });
 
     return () => subscription.unsubscribe();
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, loading, supabase }}>
+    <AuthContext.Provider value={{ user, profile, loading, supabase }}>
       {children}
     </AuthContext.Provider>
   );
