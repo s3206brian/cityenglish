@@ -1,8 +1,8 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import { COURSES } from '../../data/courses';
+import { createClient } from '@/lib/supabase/client';
 
 function speak(text) {
   if (typeof window === 'undefined') return;
@@ -15,9 +15,28 @@ function speak(text) {
 
 export default function CourseDetailPage() {
   const { courseId } = useParams();
-  const course = COURSES.find((c) => c.id === courseId);
-  const [activeTab, setActiveTab] = useState('script'); // script | phrases | patterns
+  const [course, setCourse] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState('script');
   const [practicingIdx, setPracticingIdx] = useState(null);
+  const supabase = createClient();
+
+  useEffect(() => {
+    supabase
+      .from('courses')
+      .select('*')
+      .eq('id', courseId)
+      .single()
+      .then(({ data }) => { setCourse(data); setLoading(false); });
+  }, [courseId]);
+
+  if (loading) {
+    return (
+      <main className="min-h-screen flex items-center justify-center">
+        <div className="w-8 h-8 rounded-full border-4 border-blue-500 border-t-transparent animate-spin" />
+      </main>
+    );
+  }
 
   if (!course) {
     return (
@@ -29,6 +48,9 @@ export default function CourseDetailPage() {
       </main>
     );
   }
+
+  const phrases = Array.isArray(course.phrases) ? course.phrases : [];
+  const keyPatterns = Array.isArray(course.key_patterns) ? course.key_patterns : [];
 
   return (
     <main className="min-h-screen bg-gray-50 pb-10">
@@ -53,12 +75,11 @@ export default function CourseDetailPage() {
       <div className="max-w-lg mx-auto px-4 -mt-4">
         {/* YouTube Player */}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden mb-5">
-          {course.youtubeId ? (
+          {course.youtube_id ? (
             <div className="aspect-video">
               <iframe
-                width="100%"
-                height="100%"
-                src={`https://www.youtube.com/embed/${course.youtubeId}`}
+                width="100%" height="100%"
+                src={`https://www.youtube.com/embed/${course.youtube_id}`}
                 title={course.title}
                 frameBorder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -101,7 +122,7 @@ export default function CourseDetailPage() {
               </button>
             </div>
             <div className="space-y-2">
-              {course.script.split('\n').filter(Boolean).map((line, i) => (
+              {(course.script || '').split('\n').filter(Boolean).map((line, i) => (
                 <div key={i} className="flex items-start gap-2 group">
                   <button onClick={() => speak(line)}
                     className="mt-0.5 text-gray-300 hover:text-blue-500 shrink-0 transition">
@@ -119,7 +140,7 @@ export default function CourseDetailPage() {
         {/* Phrases tab */}
         {activeTab === 'phrases' && (
           <div className="space-y-3">
-            {course.phrases.map((phrase, i) => (
+            {phrases.map((phrase, i) => (
               <div key={i} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
                 <div className="flex items-start justify-between gap-3 mb-2">
                   <div className="flex-1">
@@ -166,7 +187,7 @@ export default function CourseDetailPage() {
         {/* Patterns tab */}
         {activeTab === 'patterns' && (
           <div className="space-y-3">
-            {course.keyPatterns.map((kp, i) => (
+            {keyPatterns.map((kp, i) => (
               <div key={i} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
                 <div className="bg-amber-50 rounded-xl px-3 py-2 mb-3">
                   <p className="text-xs text-amber-500 font-medium mb-0.5">句型</p>

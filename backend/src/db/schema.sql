@@ -113,3 +113,116 @@ ON CONFLICT (id) DO UPDATE
   SET name_zh = EXCLUDED.name_zh,
       name_en = EXCLUDED.name_en,
       description = EXCLUDED.description;
+
+-- =====================
+-- 課程表
+-- =====================
+CREATE TABLE IF NOT EXISTS courses (
+  id           TEXT        PRIMARY KEY,
+  title        TEXT        NOT NULL,
+  title_en     TEXT        NOT NULL DEFAULT '',
+  level        TEXT        NOT NULL DEFAULT 'beginner',
+  emoji        TEXT        NOT NULL DEFAULT '📚',
+  gradient     TEXT        NOT NULL DEFAULT 'from-blue-500 to-cyan-500',
+  description  TEXT        NOT NULL DEFAULT '',
+  youtube_id   TEXT        NOT NULL DEFAULT '',
+  duration     TEXT        NOT NULL DEFAULT '10 分鐘',
+  objectives   JSONB       NOT NULL DEFAULT '[]',
+  script       TEXT        NOT NULL DEFAULT '',
+  phrases      JSONB       NOT NULL DEFAULT '[]',
+  key_patterns JSONB       NOT NULL DEFAULT '[]',
+  published    BOOLEAN     NOT NULL DEFAULT false,
+  sort_order   INT         NOT NULL DEFAULT 0,
+  created_at   TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at   TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+DROP TRIGGER IF EXISTS trg_courses_updated_at ON courses;
+CREATE TRIGGER trg_courses_updated_at
+  BEFORE UPDATE ON courses
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+
+ALTER TABLE courses ENABLE ROW LEVEL SECURITY;
+
+-- 公開讀取已發布課程
+DROP POLICY IF EXISTS "public read courses" ON courses;
+CREATE POLICY "public read courses" ON courses
+  FOR SELECT USING (published = true);
+
+-- 已登入使用者可讀取所有課程（管理員需要看到草稿）
+DROP POLICY IF EXISTS "auth read all courses" ON courses;
+CREATE POLICY "auth read all courses" ON courses
+  FOR SELECT USING (auth.uid() IS NOT NULL);
+
+-- 已登入使用者可寫入（前端再做 email 驗證）
+DROP POLICY IF EXISTS "auth write courses" ON courses;
+CREATE POLICY "auth write courses" ON courses
+  FOR ALL USING (auth.uid() IS NOT NULL)
+  WITH CHECK (auth.uid() IS NOT NULL);
+
+-- 課程初始資料（從靜態檔案遷移）
+INSERT INTO courses (id, title, title_en, level, emoji, gradient, description, youtube_id, duration, objectives, script, phrases, key_patterns, published, sort_order) VALUES
+(
+  'beginner_greetings',
+  '旅遊英語：問候與自我介紹',
+  'Travel English: Greetings & Introductions',
+  'beginner', '👋', 'from-blue-500 to-cyan-500',
+  '學習最基本的問候語和自我介紹，讓你在旅遊時能輕鬆開口說英文。',
+  '', '10 分鐘',
+  '["問候陌生人", "自我介紹", "詢問對方名字"]',
+  'Hello! My name is Sarah.
+Nice to meet you!
+Where are you from?
+I''m from Taiwan.
+How long are you staying?
+I''m here for three days.
+Do you have any recommendations?
+You should definitely visit the night market!',
+  '[{"en":"Nice to meet you!","zh":"很高興認識你！","tip":"第一次見面時使用"},{"en":"Where are you from?","zh":"你來自哪裡？","tip":"詢問對方的國籍或城市"},{"en":"How long are you staying?","zh":"你要待多久？","tip":"詢問旅遊行程長度"},{"en":"Do you have any recommendations?","zh":"你有什麼建議嗎？","tip":"向當地人詢問建議"}]',
+  '[{"pattern":"I''m from + place","example":"I''m from Taipei.","zh":"我來自...（地點）"},{"pattern":"I''m here for + time","example":"I''m here for a week.","zh":"我在這裡待...（時間）"},{"pattern":"You should + verb","example":"You should try the hot springs!","zh":"你應該去...（建議）"}]',
+  true, 1
+),
+(
+  'beginner_directions',
+  '旅遊英語：問路與指引',
+  'Travel English: Asking for Directions',
+  'beginner', '🗺️', 'from-emerald-500 to-green-600',
+  '學習如何問路、看懂指引，讓你在陌生城市也能找到目的地。',
+  '', '12 分鐘',
+  '["詢問方向", "理解地點描述", "感謝對方幫助"]',
+  'Excuse me, can you help me?
+I''m looking for the train station.
+Go straight ahead for two blocks.
+Then turn left at the traffic light.
+It''s on your right side.
+How far is it from here?
+It''s about a ten-minute walk.
+Thank you so much!
+You''re welcome. Have a nice day!',
+  '[{"en":"Excuse me, can you help me?","zh":"打擾一下，你能幫我嗎？","tip":"開口問路的禮貌方式"},{"en":"I''m looking for the train station.","zh":"我在找火車站。","tip":"說明你要找的地方"},{"en":"How far is it from here?","zh":"從這裡有多遠？","tip":"詢問距離"},{"en":"It''s about a ten-minute walk.","zh":"大約走路十分鐘。","tip":"描述距離的常用說法"}]',
+  '[{"pattern":"I''m looking for + noun","example":"I''m looking for a convenience store.","zh":"我在找...（地方）"},{"pattern":"Go straight / Turn left / Turn right","example":"Turn right at the corner.","zh":"直走 / 左轉 / 右轉"},{"pattern":"It''s about + time/distance + walk","example":"It''s about five minutes walk.","zh":"步行大約...（時間）"}]',
+  true, 2
+),
+(
+  'beginner_ordering',
+  '旅遊英語：點餐與購物',
+  'Travel English: Ordering & Shopping',
+  'beginner', '🍜', 'from-amber-500 to-orange-500',
+  '學習如何在餐廳點餐和在商店購物，不再比手畫腳！',
+  '', '15 分鐘',
+  '["在餐廳點餐", "詢問價格", "表達喜好"]',
+  'Welcome! How many people?
+Just two, please.
+Can I see the menu?
+What do you recommend?
+I''d like the beef noodles, please.
+Would you like anything to drink?
+Just water, please.
+How much is this?
+That comes to two hundred dollars.
+Can I pay by credit card?',
+  '[{"en":"I''d like the beef noodles, please.","zh":"我想要牛肉麵，謝謝。","tip":"點餐的禮貌說法"},{"en":"What do you recommend?","zh":"你推薦什麼？","tip":"詢問推薦菜色"},{"en":"How much is this?","zh":"這個多少錢？","tip":"詢問價格最基本的句子"},{"en":"Can I pay by credit card?","zh":"我可以用信用卡付款嗎？","tip":"詢問付款方式"}]',
+  '[{"pattern":"I''d like + noun, please","example":"I''d like a coffee, please.","zh":"我想要...（點餐/購物）"},{"pattern":"Can I + verb?","example":"Can I have the bill?","zh":"我可以...嗎？（請求）"},{"pattern":"How much is/are + noun?","example":"How much are these shoes?","zh":"...多少錢？（詢問價格）"}]',
+  true, 3
+)
+ON CONFLICT (id) DO NOTHING;

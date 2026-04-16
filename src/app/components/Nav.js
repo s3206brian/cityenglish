@@ -7,6 +7,8 @@ export default function Nav() {
   const pathname = usePathname();
   const router = useRouter();
   const { user, loading, supabase } = useAuth();
+  const ADMIN_EMAILS = (process.env.NEXT_PUBLIC_ADMIN_EMAILS || '').split(',').map(e => e.trim()).filter(Boolean);
+  const isAdmin = user && (ADMIN_EMAILS.length === 0 || ADMIN_EMAILS.includes(user.email));
 
   const links = [
     { href: '/', label: '首頁' },
@@ -67,6 +69,14 @@ export default function Nav() {
                 <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-sm font-bold">
                   {(user.user_metadata?.full_name || user.email || '?')[0].toUpperCase()}
                 </div>
+              )}
+              {isAdmin && (
+                <Link
+                  href="/admin/courses"
+                  className="text-xs text-gray-400 hover:text-blue-600 transition hidden sm:block"
+                >
+                  管理
+                </Link>
               )}
               <button
                 onClick={handleSignOut}
