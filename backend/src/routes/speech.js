@@ -33,6 +33,7 @@ router.post(
     }
 
     const { audioBase64, targetPhrase, locationId, userId, audioFormat } = req.body;
+    console.log('[evaluate-speech] audioFormat=', audioFormat, 'base64len=', audioBase64?.length, 'first20=', audioBase64?.slice(0, 20));
 
     try {
       const { transcript, confidence, wordConfidence, missedWords, score } =

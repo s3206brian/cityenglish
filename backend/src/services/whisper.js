@@ -64,9 +64,12 @@ function scoreWords(targetPhrase, transcript) {
  */
 async function transcribeAudio({ audioBase64, targetPhrase, audioFormat = 'webm' }) {
   const buffer = Buffer.from(audioBase64, 'base64');
+  // caf 是 iOS Core Audio Format，內容為 AAC，以 m4a 送給 Whisper
+  const normalizedFormat = audioFormat === 'caf' ? 'm4a' : audioFormat;
   const mimeMap = { m4a: 'audio/mp4', mp4: 'audio/mp4', webm: 'audio/webm', wav: 'audio/wav', mp3: 'audio/mpeg' };
-  const mimeType = mimeMap[audioFormat] || 'audio/webm';
-  const file = await toFile(buffer, `audio.${audioFormat}`, { type: mimeType });
+  const mimeType = mimeMap[normalizedFormat] || 'audio/webm';
+  console.log('[Whisper] audioFormat=', audioFormat, '→', normalizedFormat, 'mimeType=', mimeType, 'bufferLen=', buffer.length);
+  const file = await toFile(buffer, `audio.${normalizedFormat}`, { type: mimeType });
 
   const transcription = await openai.audio.transcriptions.create({
     file,
