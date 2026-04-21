@@ -303,3 +303,76 @@ Can I pay by credit card?',
   true, 3
 )
 ON CONFLICT (id) DO NOTHING;
+
+-- =====================
+-- 店家表
+-- =====================
+CREATE TABLE IF NOT EXISTS shops (
+  id             UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
+  owner_id       UUID        REFERENCES auth.users(id) ON DELETE SET NULL,
+  name_zh        TEXT        NOT NULL DEFAULT '',
+  name_en        TEXT        NOT NULL DEFAULT '',
+  city           TEXT        NOT NULL DEFAULT '',
+  category       TEXT        NOT NULL DEFAULT 'restaurant',
+  description_zh TEXT        NOT NULL DEFAULT '',
+  description_en TEXT        NOT NULL DEFAULT '',
+  address        TEXT        NOT NULL DEFAULT '',
+  phone          TEXT        NOT NULL DEFAULT '',
+  website        TEXT        NOT NULL DEFAULT '',
+  instagram      TEXT        NOT NULL DEFAULT '',
+  image_url      TEXT        NOT NULL DEFAULT '',
+  phrases        JSONB       NOT NULL DEFAULT '[]',
+  key_vocabulary JSONB       NOT NULL DEFAULT '[]',
+  approved       BOOLEAN     NOT NULL DEFAULT false,
+  published      BOOLEAN     NOT NULL DEFAULT false,
+  sort_order     INT         NOT NULL DEFAULT 0,
+  created_at     TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at     TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+DROP TRIGGER IF EXISTS trg_shops_updated_at ON shops;
+CREATE TRIGGER trg_shops_updated_at
+  BEFORE UPDATE ON shops
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+
+CREATE INDEX IF NOT EXISTS idx_shops_city ON shops(city);
+CREATE INDEX IF NOT EXISTS idx_shops_owner ON shops(owner_id);
+
+ALTER TABLE shops ENABLE ROW LEVEL SECURITY;
+
+-- 公開讀取已審核發布的店家
+DROP POLICY IF EXISTS "public read shops" ON shops;
+CREATE POLICY "public read shops" ON shops
+  FOR SELECT USING (approved = true AND published = true);
+
+-- 店家主人可讀取自己的店（含未審核）
+DROP POLICY IF EXISTS "owner read own shop" ON shops;
+CREATE POLICY "owner read own shop" ON shops
+  FOR SELECT USING (owner_id = auth.uid());
+
+-- 店家主人可更新自己的店
+DROP POLICY IF EXISTS "owner update own shop" ON shops;
+CREATE POLICY "owner update own shop" ON shops
+  FOR UPDATE USING (owner_id = auth.uid())
+  WITH CHECK (owner_id = auth.uid());
+
+-- 已登入用戶可新增店家申請
+DROP POLICY IF EXISTS "auth insert shop" ON shops;
+CREATE POLICY "auth insert shop" ON shops
+  FOR INSERT WITH CHECK (auth.uid() IS NOT NULL);
+
+-- 管理員可讀取所有店家
+DROP POLICY IF EXISTS "admin read all shops" ON shops;
+CREATE POLICY "admin read all shops" ON shops
+  FOR SELECT USING (is_admin());
+
+-- 管理員可更新所有店家（審核用）
+DROP POLICY IF EXISTS "admin update shops" ON shops;
+CREATE POLICY "admin update shops" ON shops
+  FOR UPDATE USING (is_admin())
+  WITH CHECK (is_admin());
+
+-- 管理員可刪除店家
+DROP POLICY IF EXISTS "admin delete shops" ON shops;
+CREATE POLICY "admin delete shops" ON shops
+  FOR DELETE USING (is_admin());

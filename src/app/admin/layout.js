@@ -34,7 +34,8 @@ export default function AdminLayout({ children }) {
 
   const tabs = [
     { href: '/admin/courses', label: '課程管理' },
-    { href: '/admin/users', label: '帳號管理' },
+    { href: '/admin/shops',   label: '店家審核' },
+    { href: '/admin/users',   label: '帳號管理' },
   ];
 
   return (

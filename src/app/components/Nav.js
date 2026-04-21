@@ -16,6 +16,7 @@ export default function Nav() {
   const links = [
     { href: '/', label: '首頁' },
     { href: '/cities/taitung', label: '探索城市' },
+    { href: '/shops', label: '🏪 英語店家' },
     { href: '/courses', label: '🎬 初階課程' },
     { href: '/leaderboard/global', label: '🏆 排行榜' },
     { href: '/progress', label: '我的進度' },
