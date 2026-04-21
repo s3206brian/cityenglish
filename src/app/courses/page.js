@@ -21,7 +21,7 @@ export default function CoursesPage() {
     <main className="min-h-screen bg-gray-50 py-10 px-4">
       <div className="max-w-2xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-2xl font-bold text-gray-900 mb-1">初階課程</h1>
+          <h1 className="text-2xl font-bold text-gray-900 mb-1">課程</h1>
           <p className="text-gray-400 text-sm">觀看影片、跟著腳本練習發音，快速建立旅遊英語基礎</p>
         </div>
 
