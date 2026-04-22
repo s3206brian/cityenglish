@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="grad" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#4f46e5"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Rounded square background -->
+  <rect width="512" height="512" rx="108" fill="url(#grad)"/>
+
+  <!-- White speech bubble (tail points bottom-left) -->
+  <path fill="white" d="
+    M 100 92
+    H 412 Q 446 92 446 126
+    V 304 Q 446 338 412 338
+    H 188
+    L 108 422
+    L 136 338
+    H 100 Q 66 338 66 304
+    V 126 Q 66 92 100 92 Z
+  "/>
+
+  <!-- City skyline inside bubble -->
+  <!-- All buildings bottom-align at y=320 -->
+
+  <!-- B1: short left -->
+  <rect x="104" y="256" width="44" height="64" rx="3" fill="#3b82f6"/>
+
+  <!-- B2: tall-left -->
+  <rect x="152" y="196" width="48" height="124" rx="3" fill="#2563eb"/>
+  <!-- windows B2 -->
+  <rect x="162" y="210" width="9" height="9" rx="1" fill="white" opacity="0.4"/>
+  <rect x="178" y="210" width="9" height="9" rx="1" fill="white" opacity="0.4"/>
+  <rect x="162" y="228" width="9" height="9" rx="1" fill="white" opacity="0.4"/>
+  <rect x="178" y="228" width="9" height="9" rx="1" fill="white" opacity="0.4"/>
+
+  <!-- B3: medium -->
+  <rect x="204" y="224" width="42" height="96" rx="3" fill="#3b82f6"/>
+
+  <!-- B4: tallest (center) -->
+  <rect x="250" y="162" width="54" height="158" rx="3" fill="#1d4ed8"/>
+  <!-- antenna -->
+  <rect x="275" y="143" width="5" height="19" rx="2" fill="#1d4ed8"/>
+  <!-- windows B4 -->
+  <rect x="260" y="178" width="10" height="10" rx="1" fill="white" opacity="0.45"/>
+  <rect x="278" y="178" width="10" height="10" rx="1" fill="white" opacity="0.45"/>
+  <rect x="284" y="178" width="10" height="10" rx="1" fill="white" opacity="0.45"/>
+  <rect x="260" y="197" width="10" height="10" rx="1" fill="white" opacity="0.45"/>
+  <rect x="278" y="197" width="10" height="10" rx="1" fill="white" opacity="0.45"/>
+  <rect x="260" y="216" width="10" height="10" rx="1" fill="white" opacity="0.45"/>
+
+  <!-- B5: medium-right -->
+  <rect x="308" y="212" width="46" height="108" rx="3" fill="#2563eb"/>
+  <!-- windows B5 -->
+  <rect x="318" y="225" width="9" height="9" rx="1" fill="white" opacity="0.4"/>
+  <rect x="334" y="225" width="9" height="9" rx="1" fill="white" opacity="0.4"/>
+
+  <!-- B6: short-right -->
+  <rect x="358" y="244" width="42" height="76" rx="3" fill="#3b82f6"/>
+
+  <!-- B7: far right, shortest -->
+  <rect x="404" y="262" width="38" height="58" rx="3" fill="#2563eb"/>
+
+  <!-- Ground line -->
+  <rect x="104" y="318" width="338" height="4" rx="2" fill="#dbeafe" opacity="0.6"/>
+</svg>

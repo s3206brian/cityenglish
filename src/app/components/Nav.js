@@ -30,8 +30,9 @@ export default function Nav() {
   return (
     <nav className="sticky top-0 z-50 bg-white/90 backdrop-blur border-b border-gray-100">
       <div className="max-w-5xl mx-auto px-6 h-14 flex items-center justify-between">
-        <Link href="/" className="font-bold text-blue-600 text-lg tracking-tight">
-          CityEnglish
+        <Link href="/" className="flex items-center gap-2">
+          <img src="/logo.svg" alt="" className="w-7 h-7 rounded-lg" />
+          <span className="font-bold text-blue-600 text-lg tracking-tight">CityEnglish</span>
         </Link>
 
         <div className="flex items-center gap-6">
