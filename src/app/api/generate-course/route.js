@@ -1,7 +1,5 @@
 import OpenAI from 'openai';
 
-const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-
 export async function POST(req) {
   try {
     const { topic } = await req.json();
@@ -9,6 +7,7 @@ export async function POST(req) {
       return Response.json({ error: '請輸入課程主題' }, { status: 400 });
     }
 
+    const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
     const message = await client.chat.completions.create({
       model: 'gpt-4o',
       max_tokens: 2048,
