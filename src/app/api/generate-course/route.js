@@ -1,6 +1,6 @@
-import Anthropic from '@anthropic-ai/sdk';
+import OpenAI from 'openai';
 
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 export async function POST(req) {
   try {
@@ -9,8 +9,8 @@ export async function POST(req) {
       return Response.json({ error: '請輸入課程主題' }, { status: 400 });
     }
 
-    const message = await client.messages.create({
-      model: 'claude-sonnet-4-6',
+    const message = await client.chat.completions.create({
+      model: 'gpt-4o',
       max_tokens: 2048,
       messages: [{
         role: 'user',
@@ -42,7 +42,7 @@ export async function POST(req) {
       }]
     });
 
-    const text = message.content[0].text.trim();
+    const text = message.choices[0].message.content.trim();
     const jsonMatch = text.match(/\{[\s\S]*\}/);
     if (!jsonMatch) {
       return Response.json({ error: 'AI 回傳格式錯誤，請重試' }, { status: 500 });
