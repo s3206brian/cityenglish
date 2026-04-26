@@ -88,10 +88,18 @@ async function getUserProgress(userId) {
     ),
   ]);
 
+  // 認證積分
+  const certRes = await pool.query(
+    `SELECT COALESCE(SUM(points), 0)::int AS cert_points FROM certifications WHERE student_id = $1`,
+    [userId]
+  );
+  const certPoints = certRes.rows[0].cert_points;
+
   return {
     sessions: sessionsRes.rows,
     wordProgress: wordRes.rows,
     locationScores: locationRes.rows,
+    certPoints,
   };
 }
 
@@ -102,20 +110,25 @@ async function getUserProgress(userId) {
 async function getCityLeaderboard(city) {
   const res = await pool.query(
     `SELECT
-       au.id                                                        AS user_id,
+       au.id                                                                          AS user_id,
        COALESCE(au.raw_user_meta_data->>'display_name',
                 au.raw_user_meta_data->>'full_name',
-                au.email)                                          AS display_name,
-       au.raw_user_meta_data->>'avatar_url'                        AS avatar_url,
-       SUM(10 + FLOOR(ps.score::numeric / 2))::int                 AS total_points,
-       MAX(ps.score)                                               AS best_score,
-       COUNT(*)::int                                               AS attempt_count,
-       MAX(ps.created_at)                                          AS last_practiced
+                au.email)                                                            AS display_name,
+       au.raw_user_meta_data->>'avatar_url'                                          AS avatar_url,
+       (COALESCE(SUM(10 + FLOOR(ps.score::numeric / 2)), 0)
+        + COALESCE(c.cert_points, 0))::int                                           AS total_points,
+       MAX(ps.score)                                                                 AS best_score,
+       COUNT(ps.id)::int                                                             AS attempt_count,
+       MAX(ps.created_at)                                                            AS last_practiced
      FROM practice_sessions ps
-     JOIN auth.users         au ON au.id = ps.user_id
-     JOIN locations           l  ON l.id  = ps.location_id
+     JOIN auth.users  au ON au.id = ps.user_id
+     JOIN locations    l  ON l.id  = ps.location_id
+     LEFT JOIN (
+       SELECT student_id, SUM(points)::int AS cert_points
+       FROM certifications GROUP BY student_id
+     ) c ON c.student_id = au.id
      WHERE l.city = $1
-     GROUP BY au.id, au.raw_user_meta_data, au.email
+     GROUP BY au.id, au.raw_user_meta_data, au.email, c.cert_points
      ORDER BY total_points DESC, attempt_count DESC
      LIMIT 20`,
     [city]
@@ -126,17 +139,27 @@ async function getCityLeaderboard(city) {
 async function getGlobalLeaderboard() {
   const res = await pool.query(
     `SELECT
-       au.id                                                        AS user_id,
+       au.id                                                                          AS user_id,
        COALESCE(au.raw_user_meta_data->>'display_name',
                 au.raw_user_meta_data->>'full_name',
-                au.email)                                          AS display_name,
-       au.raw_user_meta_data->>'avatar_url'                        AS avatar_url,
-       SUM(10 + FLOOR(ps.score::numeric / 2))::int                 AS total_points,
-       MAX(ps.score)                                               AS best_score,
-       COUNT(*)::int                                               AS attempt_count
-     FROM practice_sessions ps
-     JOIN auth.users au ON au.id = ps.user_id
-     GROUP BY au.id, au.raw_user_meta_data, au.email
+                au.email)                                                            AS display_name,
+       au.raw_user_meta_data->>'avatar_url'                                          AS avatar_url,
+       (COALESCE(ps_sum.practice_points, 0) + COALESCE(c.cert_points, 0))::int      AS total_points,
+       ps_sum.best_score,
+       COALESCE(ps_sum.attempt_count, 0)::int                                        AS attempt_count
+     FROM auth.users au
+     LEFT JOIN (
+       SELECT user_id,
+              SUM(10 + FLOOR(score::numeric / 2))::int AS practice_points,
+              MAX(score)                               AS best_score,
+              COUNT(*)::int                            AS attempt_count
+       FROM practice_sessions GROUP BY user_id
+     ) ps_sum ON ps_sum.user_id = au.id
+     LEFT JOIN (
+       SELECT student_id, SUM(points)::int AS cert_points
+       FROM certifications GROUP BY student_id
+     ) c ON c.student_id = au.id
+     WHERE COALESCE(ps_sum.practice_points, 0) + COALESCE(c.cert_points, 0) > 0
      ORDER BY total_points DESC
      LIMIT 20`
   );

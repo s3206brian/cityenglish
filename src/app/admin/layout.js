@@ -11,16 +11,18 @@ export default function AdminLayout({ children }) {
   const router = useRouter();
   const pathname = usePathname();
 
-  // 允許進入：profile.is_admin=true 或 email 在 bootstrap 清單中
-  const isAdmin = user && (
+  const isSystemAdmin = user && (
     profile?.is_admin === true ||
     (BOOTSTRAP_EMAILS.length > 0 && BOOTSTRAP_EMAILS.includes(user.email))
   );
+  const isCourseAdmin = isSystemAdmin || (user && profile?.is_course_admin === true);
+  const isShopAdmin   = isSystemAdmin || (user && profile?.is_shop_admin === true);
+  const canAccess     = isSystemAdmin || isCourseAdmin || isShopAdmin;
 
   useEffect(() => {
     if (!loading && !user) router.push('/login');
-    if (!loading && user && profile !== undefined && !isAdmin) router.push('/');
-  }, [loading, user, profile, isAdmin, router]);
+    if (!loading && user && profile !== undefined && !canAccess) router.push('/');
+  }, [loading, user, profile, canAccess, router]);
 
   if (loading || (user && profile === undefined)) {
     return (
@@ -30,13 +32,16 @@ export default function AdminLayout({ children }) {
     );
   }
 
-  if (!user || !isAdmin) return null;
+  if (!user || !canAccess) return null;
 
   const tabs = [
-    { href: '/admin/courses', label: '課程管理' },
-    { href: '/admin/shops',   label: '店家審核' },
-    { href: '/admin/users',   label: '帳號管理' },
-  ];
+    isSystemAdmin && { href: '/admin/users',   label: '帳號管理' },
+    isCourseAdmin && { href: '/admin/courses',  label: '課程管理' },
+    isShopAdmin   && { href: '/admin/shops',    label: '店家管理' },
+  ].filter(Boolean);
+
+  const roleLabel = isSystemAdmin ? '系統管理員'
+    : [isCourseAdmin && '課程', isShopAdmin && '商家'].filter(Boolean).join('＋') + '管理員';
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -55,7 +60,8 @@ export default function AdminLayout({ children }) {
             {tab.label}
           </Link>
         ))}
-        <div className="ml-auto">
+        <div className="ml-auto flex items-center gap-4">
+          <span className="text-xs text-gray-400 hidden sm:block">{roleLabel}</span>
           <Link href="/" className="text-xs text-gray-400 hover:text-gray-600 transition">← 回前台</Link>
         </div>
       </div>

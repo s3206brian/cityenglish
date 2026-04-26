@@ -70,8 +70,10 @@ export default function ProgressPage() {
   const sessions = data?.sessions ?? [];
   const wordProgress = data?.wordProgress ?? [];
   const locationScores = data?.locationScores ?? [];
+  const certPoints = Number(data?.certPoints ?? 0);
 
-  const totalPoints = locationScores.reduce((s, l) => s + Number(l.total_points || 0), 0);
+  const practicePoints = locationScores.reduce((s, l) => s + Number(l.total_points || 0), 0);
+  const totalPoints = practicePoints + certPoints;
   const avgScore = sessions.length
     ? Math.round(sessions.reduce((s, r) => s + Number(r.score), 0) / sessions.length)
     : 0;
@@ -201,13 +203,27 @@ export default function ProgressPage() {
                 </div>
 
                 {/* 積分說明 */}
-                <div className="bg-purple-50 border border-purple-100 rounded-2xl px-5 py-3 mb-8 flex items-center gap-3">
+                <div className="bg-purple-50 border border-purple-100 rounded-2xl px-5 py-3 mb-4 flex items-center gap-3">
                   <span className="text-2xl">💎</span>
-                  <div>
+                  <div className="flex-1">
                     <p className="text-sm font-semibold text-purple-700">積分規則</p>
-                    <p className="text-xs text-purple-500">每次練習 +10 基礎積分，依分數額外獲得最多 +50 積分（分數越高累積越快）</p>
+                    <p className="text-xs text-purple-500">語音練習 +10 基礎積分，依分數額外最多 +50；課程認證每次 +50</p>
+                  </div>
+                  <div className="text-right shrink-0">
+                    <p className="text-xs text-purple-400">練習 {practicePoints} + 認證 {certPoints}</p>
+                    <p className="text-sm font-bold text-purple-700">共 {totalPoints} 積分</p>
                   </div>
                 </div>
+
+                {certPoints > 0 && (
+                  <div className="bg-amber-50 border border-amber-100 rounded-2xl px-5 py-3 mb-8 flex items-center gap-3">
+                    <span className="text-2xl">🎓</span>
+                    <div>
+                      <p className="text-sm font-semibold text-amber-700">課程認證積分</p>
+                      <p className="text-xs text-amber-500">你已獲得 {certPoints} 點課程認證積分，已計入總積分</p>
+                    </div>
+                  </div>
+                )}
 
                 {/* 城市進度 */}
                 {Object.keys(byCity).length > 0 && (

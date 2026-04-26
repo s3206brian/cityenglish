@@ -29,6 +29,11 @@ export default function CourseForm({ initial, isEdit = false }) {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
 
+  // AI generation
+  const [aiTopic, setAiTopic] = useState('');
+  const [generating, setGenerating] = useState(false);
+  const [aiError, setAiError] = useState('');
+
   const [id, setId] = useState(initial?.id || '');
   const [title, setTitle] = useState(initial?.title || '');
   const [titleEn, setTitleEn] = useState(initial?.title_en || '');
@@ -58,6 +63,32 @@ export default function CourseForm({ initial, isEdit = false }) {
   function handleTitleChange(v) {
     setTitle(v);
     if (!isEdit) setId(toId(v));
+  }
+
+  async function handleGenerate() {
+    if (!aiTopic.trim()) return;
+    setGenerating(true);
+    setAiError('');
+    try {
+      const res = await fetch('/api/generate-course', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ topic: aiTopic }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || '生成失敗');
+      if (data.title) handleTitleChange(data.title);
+      if (data.titleEn) setTitleEn(data.titleEn);
+      if (data.description) setDescription(data.description);
+      if (data.objectives?.length) setObjectives(data.objectives);
+      if (data.script) setScript(data.script);
+      if (data.phrases?.length) setPhrases(data.phrases);
+      if (data.keyPatterns?.length) setKeyPatterns(data.keyPatterns);
+    } catch (e) {
+      setAiError(e.message);
+    } finally {
+      setGenerating(false);
+    }
   }
 
   // Objectives helpers
@@ -134,6 +165,41 @@ export default function CourseForm({ initial, isEdit = false }) {
       )}
 
       <div className="space-y-6">
+        {/* AI Generation */}
+        <section className="bg-gradient-to-r from-violet-50 to-indigo-50 border border-violet-200 rounded-2xl p-5">
+          <div className="flex items-center gap-2 mb-3">
+            <span className="text-lg">✨</span>
+            <h2 className="font-semibold text-violet-800 text-sm">AI 生成課程內容</h2>
+          </div>
+          <p className="text-xs text-violet-600 mb-3">輸入課程主題，AI 自動生成標題、腳本、練習句和句型，生成後可手動修改。</p>
+          <div className="flex gap-2">
+            <input
+              value={aiTopic}
+              onChange={e => setAiTopic(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && !generating && handleGenerate()}
+              className="flex-1 border border-violet-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-violet-400 bg-white"
+              placeholder="例如：在台東咖啡廳點餐、詢問七星潭的衝浪課程..."
+              disabled={generating}
+            />
+            <button
+              onClick={handleGenerate}
+              disabled={generating || !aiTopic.trim()}
+              className="bg-violet-600 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-violet-700 transition disabled:opacity-50 shrink-0 flex items-center gap-2"
+            >
+              {generating ? (
+                <>
+                  <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  生成中...
+                </>
+              ) : '生成'}
+            </button>
+          </div>
+          {aiError && <p className="text-xs text-red-500 mt-2">{aiError}</p>}
+          {generating && (
+            <p className="text-xs text-violet-500 mt-2 animate-pulse">AI 正在生成課程內容，約需 10–20 秒...</p>
+          )}
+        </section>
+
         {/* Preview banner */}
         <div className={`bg-gradient-to-r ${gradient} rounded-2xl p-5 flex items-center gap-4`}>
           <span className="text-4xl">{emoji || '📚'}</span>
